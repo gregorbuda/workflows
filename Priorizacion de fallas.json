@@ -1,0 +1,103 @@
+{
+  "name": "Priorizacion de fallas",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": ["message", "callback_query"],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [-784, 32],
+      "id": "6327bc91-059d-4129-a011-e39e03fc0b13",
+      "name": "Telegram Trigger",
+      "credentials": {
+        "telegramApi": { "id": "creds_id", "name": "Telegram Account" }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "x-api-key", "value": "TU_ANTHROPIC_KEY_AQUI" },
+            { "name": "anthropic-version", "value": "2023-06-01" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"model\": \"claude-haiku\", \"max_tokens\": 200, \"messages\": [ { \"role\": \"user\", \"content\": \"={{ $json.DisplayText }}\" } ] }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [1568, 64],
+      "id": "743080c9-1381-42c7-ae36-b50f391302d3",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fallas-backend-app.azurewebsites.net/usuarios/login",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [ { "name": "content-type", "value": "application/json" } ] },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "email", "value": "usuario@ejemplo.com" },
+            { "name": "password", "value": "TU_PASSWORD_AQUI" }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [2048, 64],
+      "id": "10caa778-4366-42a4-a9e8-ba2b84511ce2",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://eastus.stt.speech.microsoft.com/speech/recognition/v1?language=es-VE",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Ocp-Apim-Subscription-Key", "value": "TU_AZURE_SPEECH_KEY_AQUI" },
+            { "name": "Content-Type", "value": "audio/ogg; codecs=opus" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [1824, -512],
+      "id": "4a853923-942b-4f16-8217-7019708c52de",
+      "name": "HTTP Request4 — Azure Speech"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://improved-earwig-77873.upstash.io/set/falla/data",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "Bearer TU_UPSTASH_TOKEN_AQUI" }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [288, 64],
+      "id": "a8652477-12c9-427d-b405-611ea54ae17a",
+      "name": "HTTP Request9"
+    }
+  ],
+  "connections": { "Telegram Trigger": { "main": [[{ "node": "HTTP Request", "type": "main", "index": 0 }]] } }
+}

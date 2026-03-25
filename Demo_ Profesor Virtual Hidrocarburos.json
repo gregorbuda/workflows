@@ -1,0 +1,35 @@
+{
+  "name": "Demo: Profesor Virtual Hidrocarburos",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://functionapp-gregor-demo.azurewebsites.net/api/Login?code=TU_FUNCTION_KEY_AQUI",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "Username", "value": "={{ $json.username }}" },
+            { "name": "Password", "value": "={{ $json.password }}" }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [-160, 288],
+      "id": "8d6686da-55c9-47ef-b04b-a6611826991e",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "model": "chat-profesor",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "id": "6a5e9a31-0e55-4c7e-a318-ef281b216e5e",
+      "name": "Azure OpenAI Chat Model",
+      "credentials": { "azureOpenAiApi": { "id": "creds_id", "name": "Azure Account" } }
+    }
+  ],
+  "connections": { "HTTP Request": { "main": [[]] } }
+}
